@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Defining the structure
+typedef struct {
+    int id;             // laptop ID
+    char name[100];     // laptop brand
+    double salary;      // laptop price
+} Employee;
+
+// Comparison function for sorting employees by salary
+int compareEmployees(const void *a, const void *b) {
+    // Cast the pointers to Employee structure
+    Employee *emp1 = (Employee *)a;
+    Employee *emp2 = (Employee *)b;
+
+    // First, sort by salary in descending order
+    if (emp1->salary < emp2->salary) {
+        return 1;  // emp1's salary is less, so emp2 comes first
+    } else if (emp1->salary > emp2->salary) {
+        return -1; // emp1's salary is greater, so emp1 comes first
+    } else {
+        // If salaries are equal, sort by ID in ascending order
+        if (emp1->id < emp2->id) {
+            return -1; // emp1's ID is smaller, so emp1 comes first
+        } else if (emp1->id > emp2->id) {
+            return 1;  // emp2's ID is smaller, so emp2 comes first
+        }
+        return 0;  // Both salary and ID are equal, no change
+    }
+}
+
+// Function to read employee data
+void readEmployeeData(Employee *emp) {
+    printf("Enter Laptop ID: ");
+    scanf("%d", &emp->id);
+    getchar();  // Consume the newline character left by scanf
+    printf("Enter Laptop Brand: ");
+    fgets(emp->name, 100, stdin);
+    emp->name[strcspn(emp->name, "\n")] = '\0';  // Remove trailing newline
+    printf("Enter Laptop price: ");
+    scanf("%lf", &emp->salary);
+}
+
+int main() {
+    int numEmployees;
+
+    // Read the number of employees
+    printf("Enter number of laptops for inventory: ");
+    scanf("%d", &numEmployees);
+    getchar();  // Consume the newline character
+
+    // Create an array to store employee data
+    Employee *employees = (Employee *)malloc(numEmployees * sizeof(Employee));
+
+    // Read employee data
+    for (int i = 0; i < numEmployees; i++) {
+        printf("\nEnter details for laptop %d:\n", i + 1);
+        readEmployeeData(&employees[i]);
+    }
+
+    // Sort the employees based on salary (and ID for tie-breaking)
+    qsort(employees, numEmployees, sizeof(Employee), compareEmployees);
+
+    // Print the sorted employee details
+    printf("\nLaptop details sorted by price (highest to lowest):\n");
+    for (int i = 0; i < numEmployees; i++) {
+        printf("Laptop ID: %d\n", employees[i].id);
+        printf("Brand: %s\n", employees[i].name);
+        printf("price: %.2lf\n\n", employees[i].salary);
+    }
+
+    // Free the dynamically allocated memory
+    free(employees);
+
+    return 0;
+}
